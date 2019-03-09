@@ -2122,7 +2122,7 @@ static int memdesc_sg_virt(struct kgsl_memdesc *memdesc, struct file *vmfile)
 
 	if (ret == 0) {
 		npages = get_user_pages(current, current->mm, memdesc->useraddr,
-					sglen, write, 0, pages, NULL);
+					sglen, write ? FOLL_WRITE : 0, pages, NULL);
 		ret = (npages < 0) ? (int)npages : 0;
 	}
 	up_read(&current->mm->mmap_sem);
@@ -4893,7 +4893,7 @@ static void kgsl_core_exit(void)
 static int __init kgsl_core_init(void)
 {
 	int result = 0;
-	struct sched_param param = { .sched_priority = 2 };
+	struct sched_param param = { .sched_priority = 16 };
 
 	/* alloc major and minor device numbers */
 	result = alloc_chrdev_region(&kgsl_driver.major, 0, KGSL_DEVICE_MAX,
